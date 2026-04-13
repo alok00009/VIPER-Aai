@@ -20,6 +20,16 @@
 </head>
 <body oncontextmenu="return false">
 
+<script>
+    // --- DOMAIN LOCK ACTIVATE ---
+    // Yahan maine papu2.netlify.app set kar diya hai
+    const authD = "papu2.netlify.app"; 
+    if (window.location.hostname !== authD && window.location.hostname !== "localhost") {
+        document.body.innerHTML = "<div style='height:100vh; display:flex; align-items:center; justify-content:center; bg:black; color:red; font-weight:bold; text-align:center;'><div><h1>UNAUTHORIZED DOMAIN DETECTED</h1><p>This tool is locked to papu2.netlify.app</p></div></div>";
+        throw new Error("Domain Lock Active");
+    }
+</script>
+
 <div id="authSection" class="min-h-screen flex items-center justify-center p-6">
     <div class="premium-card p-10 w-full max-w-md text-center shadow-2xl">
         <h1 class="hacker-title text-xl font-bold mb-8">VIPER <span class="text-cyan-400">AI</span></h1>
@@ -64,13 +74,6 @@
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
     import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 
-    // --- DOMAIN LOCK LOGIC ---
-    const authD = "papu.netifly.app";
-    if (window.location.hostname !== authD && window.location.hostname !== "localhost") {
-        document.body.innerHTML = "<div class='h-screen flex items-center justify-center bg-black text-red-500 font-bold'><h1>UNAUTHORIZED DOMAIN (STEALING DETECTED)</h1></div>";
-        throw new Error("Lock");
-    }
-
     const firebaseConfig = {
         apiKey: "AIzaSyD6f_ghtCQP2q41QXGkld1l8KhX6z7mYgU",
         authDomain: "fuck-u-1fd9c.firebaseapp.com",
@@ -84,9 +87,7 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // ADMIN MASTER KEY
     const masterUID = "DM4f7VClDtRnYjiFDX2lCF5XBRB3";
-
     let tab = 'login';
     const msg = document.getElementById('statusMsg');
 
@@ -99,12 +100,12 @@
     document.getElementById('btnSubmit').addEventListener('click', async () => {
         const e = document.getElementById('email').value, p = document.getElementById('pass').value;
         if(!e || !p) return;
-        msg.innerText = "Syncing with Engine...";
+        msg.innerText = "Syncing...";
         try {
             if(tab === 'reg') {
                 const cred = await createUserWithEmailAndPassword(auth, e, p);
                 await set(ref(db, 'users/' + cred.user.uid), { email: e, access: 'pending', expiry: 0 });
-                msg.innerText = "Approval Request Sent!";
+                msg.innerText = "Request Sent!";
                 setTimeout(() => signOut(auth), 2000);
             } else {
                 await signInWithEmailAndPassword(auth, e, p);
@@ -116,19 +117,14 @@
         if (user) {
             const snap = await get(ref(db, 'users/' + user.uid));
             const data = snap.val();
-            // MASTER BYPASS FOR ADMIN
             if (user.uid === masterUID || (data && data.access === true)) {
-                if(user.uid !== masterUID && data.expiry !== 0 && Date.now() > data.expiry) {
-                    msg.innerText = "Access Expired!";
-                    signOut(auth); return;
-                }
                 document.getElementById('authSection').classList.add('hidden');
                 document.getElementById('dashboardPage').classList.remove('hidden');
                 onValue(ref(db, 'admin_controls/prediction_status'), (s) => {
                     document.getElementById('adminLock').classList.toggle('hidden', s.val() === 'start');
                 });
             } else {
-                msg.innerText = "Pending Admin Approval...";
+                msg.innerText = "Pending Approval...";
                 signOut(auth);
             }
         } else {
@@ -139,27 +135,26 @@
 
     window.logout = () => signOut(auth);
 
-    // MASKED LOGIC (95% ACCURACY)
     window.originalPredict = () => {
         const _v = document.getElementById('pastNo').value;
         if(!_v) return;
         const _r = document.getElementById('wRes');
-        _r.innerText = "CALC...";
+        _r.innerText = "...";
         setTimeout(() => {
             const _n = parseInt(_v);
-            const _logic = (_n + 0x7) % 0xA; 
-            const _sz = _logic >= 0x5 ? "BIG" : "SMALL";
+            const _logic = (_n + 7) % 10; 
+            const _sz = _logic >= 5 ? "BIG" : "SMALL";
             _r.innerText = _sz;
             _r.className = _sz === "BIG" ? "text-7xl font-black hacker-title neon-red" : "text-7xl font-black hacker-title neon-cyan";
             document.getElementById('n1').innerText = (_n + 2) % 10;
             document.getElementById('n2').innerText = (_n + 5) % 10;
             document.getElementById('n3').innerText = (_n + 8) % 10;
-        }, 800);
+        }, 500);
     };
 
-    // SECURITY SYSTEM
+    // Right click & F12 lock
     document.addEventListener('contextmenu', e => e.preventDefault());
-    document.onkeydown = e => { if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || (e.ctrlKey && e.keyCode == 85)) return false; };
+    document.onkeydown = e => { if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73)) return false; };
 </script>
 </body>
 </html>
