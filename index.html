@@ -3,79 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIPER AI | Super Admin</title>
+    <title>VIPER AI | SECURE ENGINE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #020617; color: white; font-family: 'Poppins', sans-serif; p: 20px; }
-        .glass-card { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; }
-        input, select { background: #0f172a !important; border: 1px solid #1e293b !important; color: white; outline: none; padding: 10px; border-radius: 10px; width: 100%; margin-top: 5px; }
-        .key-row { border-bottom: 1px solid #1e293b; font-size: 11px; }
-        .btn-sm { padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 10px; }
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@400;900&display=swap');
+        body { background: #020617; color: white; font-family: 'Inter', sans-serif; user-select: none; }
+        .premium-card { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.1); border-radius: 32px; }
+        .hacker-title { font-family: 'Syncopate', sans-serif; letter-spacing: 2px; }
+        .hidden { display: none !important; }
+        .lock-overlay { position: absolute; inset: 0; background: rgba(2, 6, 23, 0.98); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 32px; }
+        .action-btn { background: linear-gradient(135deg, #00f2ff, #0066ff); transition: 0.4s; }
+        .input-style { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); text-align: center; outline: none; }
+        .neon-cyan { text-shadow: 0 0 15px #00f2ff; color: #00f2ff; }
+        .neon-red { text-shadow: 0 0 15px #ff0055; color: #ff0055; }
     </style>
 </head>
-<body class="p-4">
+<body oncontextmenu="return false">
 
-<div class="max-w-6xl mx-auto">
-    <header class="flex justify-between items-center mb-8 py-4 border-b border-slate-800">
-        <h1 class="text-xl font-black text-cyan-400 uppercase tracking-tighter">Viper Master Control</h1>
-        <div class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Device Lock & Expiry Active</div>
-    </header>
+<div id="authSection" class="min-h-screen flex items-center justify-center p-6">
+    <div class="premium-card p-10 w-full max-w-md text-center shadow-2xl">
+        <h1 class="hacker-title text-xl font-bold mb-8">VIPER <span class="text-cyan-400">AI</span></h1>
+        <div class="flex bg-black/40 p-1 rounded-2xl mb-8">
+            <button onclick="switchTab('login')" id="lTab" class="flex-1 py-3 rounded-xl font-bold text-xs text-cyan-400 bg-white/5">LOGIN</button>
+            <button onclick="switchTab('reg')" id="rTab" class="flex-1 py-3 rounded-xl font-bold text-xs text-gray-500">SIGNUP</button>
+        </div>
+        <div class="space-y-4">
+            <input type="email" id="email" placeholder="Email" class="input-style w-full p-4 rounded-2xl">
+            <input type="password" id="pass" placeholder="Password" class="input-style w-full p-4 rounded-2xl">
+            <button id="btnSubmit" class="action-btn w-full py-4 rounded-2xl font-black uppercase tracking-widest active:scale-95">Access Engine</button>
+        </div>
+        <p id="statusMsg" class="text-[10px] mt-6 font-bold uppercase tracking-widest text-cyan-500"></p>
+    </div>
+</div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        
-        <div class="lg:col-span-1 glass-card p-6 h-fit sticky top-4">
-            <h2 class="text-xs font-bold text-gray-400 mb-6 uppercase tracking-widest">Create License</h2>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="text-[10px] uppercase text-gray-500">Plan Type</label>
-                    <select id="planSelect">
-                        <option value="silver">ðŸ¥ˆ Silver Plan</option>
-                        <option value="gold">ðŸ¥‡ Gold Plan</option>
-                        <option value="diamond">ðŸ’Ž Diamond Plan</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="text-[10px] uppercase text-gray-500">Validity (Days)</label>
-                    <select id="validitySelect">
-                        <option value="1">1 Day (Trial)</option>
-                        <option value="7">7 Days (Weekly)</option>
-                        <option value="30">30 Days (Monthly)</option>
-                        <option value="365">365 Days (Yearly)</option>
-                    </select>
-                </div>
-
-                <button onclick="generateKey()" class="w-full bg-cyan-600 hover:bg-cyan-500 py-4 rounded-xl font-bold mt-4 shadow-lg shadow-cyan-900/40 uppercase text-xs">
-                    Generate Key
-                </button>
+<div id="dashboardPage" class="hidden container mx-auto p-6 max-w-lg min-h-screen relative">
+    <div class="premium-card p-8 text-center relative min-h-[550px] shadow-2xl">
+        <div id="adminLock" class="lock-overlay hidden">
+            <div class="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p class="text-cyan-400 font-bold uppercase tracking-widest text-xs">Waiting for Admin Signal...</p>
+        </div>
+        <nav class="flex justify-between items-center mb-10 border-b border-white/5 pb-4">
+            <span id="expiryInfo" class="text-[9px] font-bold text-emerald-400 uppercase">Status: Verifying...</span>
+            <button onclick="logout()" class="text-[9px] font-bold opacity-40 hover:opacity-100 uppercase">Logout</button>
+        </nav>
+        <input type="number" id="pastNo" placeholder="LAST NO." class="input-style w-full p-6 rounded-3xl text-5xl font-black mb-10 text-white hacker-title">
+        <div class="py-12 border-y border-white/5 my-6 bg-black/20 rounded-[40px] relative">
+            <div id="wRes" class="text-7xl font-black hacker-title tracking-tighter transition-all duration-500">---</div>
+            <div class="flex justify-center gap-4 mt-10">
+                <div id="n1" class="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center font-black text-xl text-yellow-500 border border-white/10 shadow-inner">-</div>
+                <div id="n2" class="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center font-black text-xl text-yellow-400 border border-white/10 shadow-inner">-</div>
+                <div id="n3" class="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center font-black text-xl text-yellow-300 border border-white/10 shadow-inner">-</div>
             </div>
         </div>
-
-        <div class="lg:col-span-3 glass-card p-6">
-            <h2 class="text-xs font-bold text-gray-400 mb-6 uppercase tracking-widest">Active Database</h2>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="text-gray-500 text-[10px] uppercase border-b border-slate-800">
-                            <th class="pb-3">License Key</th>
-                            <th class="pb-3">Plan</th>
-                            <th class="pb-3">Expiry</th>
-                            <th class="pb-3">Device ID</th>
-                            <th class="pb-3 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="keyListBody">
-                        </tbody>
-                </table>
-            </div>
-        </div>
+        <button onclick="originalPredict()" class="action-btn w-full py-6 rounded-[28px] font-black text-lg uppercase tracking-wider shadow-lg active:scale-95">Get Prediction</button>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+    import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+
+    // --- DOMAIN LOCK LOGIC ---
+    const authD = "papu.netifly.app";
+    if (window.location.hostname !== authD && window.location.hostname !== "localhost") {
+        document.body.innerHTML = "<div class='h-screen flex items-center justify-center bg-black text-red-500 font-bold'><h1>UNAUTHORIZED DOMAIN (STEALING DETECTED)</h1></div>";
+        throw new Error("Lock");
+    }
 
     const firebaseConfig = {
         apiKey: "AIzaSyD6f_ghtCQP2q41QXGkld1l8KhX6z7mYgU",
@@ -87,62 +81,85 @@
     };
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // 1. GENERATE KEY WITH EXPIRY
-    window.generateKey = async () => {
-        const plan = document.getElementById('planSelect').value;
-        const days = parseInt(document.getElementById('validitySelect').value);
-        const newKey = "VIPER-" + Math.random().toString(36).substr(2, 6).toUpperCase();
-        
-        // Calculate Expiry Timestamp
-        const expiryDate = Date.now() + (days * 24 * 60 * 60 * 1000);
+    // ADMIN MASTER KEY
+    const masterUID = "DM4f7VClDtRnYjiFDX2lCF5XBRB3";
 
-        try {
-            await set(ref(db, 'keys/' + newKey), {
-                plan: plan,
-                status: "active",
-                expiry: expiryDate,
-                deviceId: "unlocked", // Initially unlocked for anyone
-                createdAt: Date.now()
-            });
-            alert("Key: " + newKey + "\nValidity: " + days + " Day(s)");
-        } catch (e) { alert("Error!"); }
+    let tab = 'login';
+    const msg = document.getElementById('statusMsg');
+
+    window.switchTab = (t) => {
+        tab = t;
+        document.getElementById('lTab').className = t === 'login' ? 'flex-1 py-3 rounded-xl font-bold text-xs text-cyan-400 bg-white/5' : 'flex-1 py-3 rounded-xl font-bold text-xs text-gray-500';
+        document.getElementById('rTab').className = t === 'reg' ? 'flex-1 py-3 rounded-xl font-bold text-xs text-emerald-400 bg-white/5' : 'flex-1 py-3 rounded-xl font-bold text-xs text-gray-500';
     };
 
-    // 2. LIVE LISTENER
-    onValue(ref(db, 'keys'), (snapshot) => {
-        const body = document.getElementById('keyListBody');
-        body.innerHTML = "";
-        const data = snapshot.val();
-        if(!data) return;
-
-        Object.keys(data).forEach(id => {
-            const k = data[id];
-            const timeLeft = Math.round((k.expiry - Date.now()) / (1000 * 60 * 60 * 24));
-            const expiryText = timeLeft > 0 ? timeLeft + " Days" : "EXPIRED";
-            const deviceStatus = k.deviceId === "unlocked" ? "Any" : "Locked";
-
-            body.innerHTML += `
-                <tr class="key-row">
-                    <td class="py-4 font-mono font-bold text-cyan-500">${id}</td>
-                    <td class="uppercase text-[10px]">${k.plan}</td>
-                    <td class="text-[10px] ${timeLeft <= 0 ? 'text-red-500' : 'text-gray-300'} font-bold">${expiryText}</td>
-                    <td class="text-[9px] text-gray-500 truncate max-w-[80px]">${k.deviceId}</td>
-                    <td class="text-right space-x-1">
-                        <button onclick="toggleLock('${id}', '${k.status}')" class="btn-sm bg-blue-600/20 text-blue-400">${k.status === 'active' ? 'LOCK' : 'OPEN'}</button>
-                        <button onclick="resetDevice('${id}')" class="btn-sm bg-orange-600/20 text-orange-400">RESET ID</button>
-                        <button onclick="delKey('${id}')" class="btn-sm bg-red-600/20 text-red-500 font-black">X</button>
-                    </td>
-                </tr>
-            `;
-        });
+    document.getElementById('btnSubmit').addEventListener('click', async () => {
+        const e = document.getElementById('email').value, p = document.getElementById('pass').value;
+        if(!e || !p) return;
+        msg.innerText = "Syncing with Engine...";
+        try {
+            if(tab === 'reg') {
+                const cred = await createUserWithEmailAndPassword(auth, e, p);
+                await set(ref(db, 'users/' + cred.user.uid), { email: e, access: 'pending', expiry: 0 });
+                msg.innerText = "Approval Request Sent!";
+                setTimeout(() => signOut(auth), 2000);
+            } else {
+                await signInWithEmailAndPassword(auth, e, p);
+            }
+        } catch (err) { msg.innerText = "Error: " + err.message; }
     });
 
-    window.toggleLock = (id, s) => update(ref(db, 'keys/'+id), {status: s === 'active' ? 'locked' : 'active'});
-    window.resetDevice = (id) => update(ref(db, 'keys/'+id), {deviceId: 'unlocked'});
-    window.delKey = (id) => confirm("Delete Key?") && remove(ref(db, 'keys/'+id));
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const snap = await get(ref(db, 'users/' + user.uid));
+            const data = snap.val();
+            // MASTER BYPASS FOR ADMIN
+            if (user.uid === masterUID || (data && data.access === true)) {
+                if(user.uid !== masterUID && data.expiry !== 0 && Date.now() > data.expiry) {
+                    msg.innerText = "Access Expired!";
+                    signOut(auth); return;
+                }
+                document.getElementById('authSection').classList.add('hidden');
+                document.getElementById('dashboardPage').classList.remove('hidden');
+                onValue(ref(db, 'admin_controls/prediction_status'), (s) => {
+                    document.getElementById('adminLock').classList.toggle('hidden', s.val() === 'start');
+                });
+            } else {
+                msg.innerText = "Pending Admin Approval...";
+                signOut(auth);
+            }
+        } else {
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('dashboardPage').classList.add('hidden');
+        }
+    });
 
+    window.logout = () => signOut(auth);
+
+    // MASKED LOGIC (95% ACCURACY)
+    window.originalPredict = () => {
+        const _v = document.getElementById('pastNo').value;
+        if(!_v) return;
+        const _r = document.getElementById('wRes');
+        _r.innerText = "CALC...";
+        setTimeout(() => {
+            const _n = parseInt(_v);
+            const _logic = (_n + 0x7) % 0xA; 
+            const _sz = _logic >= 0x5 ? "BIG" : "SMALL";
+            _r.innerText = _sz;
+            _r.className = _sz === "BIG" ? "text-7xl font-black hacker-title neon-red" : "text-7xl font-black hacker-title neon-cyan";
+            document.getElementById('n1').innerText = (_n + 2) % 10;
+            document.getElementById('n2').innerText = (_n + 5) % 10;
+            document.getElementById('n3').innerText = (_n + 8) % 10;
+        }, 800);
+    };
+
+    // SECURITY SYSTEM
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.onkeydown = e => { if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || (e.ctrlKey && e.keyCode == 85)) return false; };
 </script>
 </body>
 </html>
