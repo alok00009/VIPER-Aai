@@ -1,70 +1,65 @@
+import { db } from './database.js';
+import { ref, set, push } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+
 let lastNum = null;
 let lastPeriod = null;
-let currentPrediction = null;
-let historyData = [];
 
+// API Fetching
 async function fetchAPI() {
     try {
         const res = await fetch("https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json");
-        const data = await res.json();
-        const latest = data.data.list[0];
-
-        // Agar naya period aaya hai toh win/loss check karo
-        if (lastPeriod && latest.issueNumber !== lastPeriod) {
-            updateHistory(latest);
-        }
+        const json = await res.json();
+        const latest = json.data.list[0];
 
         lastNum = latest.number;
         lastPeriod = latest.issueNumber;
+        
         const nextIssue = (BigInt(latest.issueNumber) + 1n).toString();
-        document.getElementById("nextPeriod").innerText = "Next: " + nextIssue;
-    } catch (e) { console.error("API Error"); }
+        document.getElementById("nextPeriod").innerText = "PERIOD: " + nextIssue;
+    } catch (e) { console.log("API Sync Error"); }
 }
 
-function updateHistory(latest) {
-    if (!currentPrediction) return;
-    
-    const actualSize = latest.number >= 5 ? "BIG" : "SMALL";
-    const status = (currentPrediction === actualSize) ? "WIN 🐯" : "LOSS 💀";
-    const statusColor = (currentPrediction === actualSize) ? "text-green-500" : "text-red-500";
-
-    const row = `<tr class="border-b border-white/5">
-        <td class="py-2">${latest.issueNumber.toString().slice(-3)}</td>
-        <td class="py-2">${currentPrediction}</td>
-        <td class="py-2">${latest.number}</td>
-        <td class="py-2 ${statusColor}">${status}</td>
-    </tr>`;
-    
-    document.getElementById('historyBody').insertAdjacentHTML('afterbegin', row);
-    currentPrediction = null; // Reset
-}
-
+// Prediction Logic
 document.getElementById('btnPredict').onclick = () => {
-    if (lastNum === null) return;
+    if (!lastNum) return;
     const loader = document.getElementById('aiLoader');
     loader.classList.remove('hidden');
 
-    setTimeout(() => {
-        const num = parseInt(lastNum);
-        let size, op1, op2;
+    setTimeout(async () => {
+        const n = parseInt(lastNum);
+        let size, op;
 
-        // V15 STRICT LOGIC
-        if (num % 2 === 0) {
-            size = "BIG"; op1 = 1; op2 = 3;
+        // Nobita Strict Logic V15
+        if (n % 2 === 0) {
+            size = "BIG"; op = "1, 3";
         } else {
-            size = "SMALL"; op1 = 7; op2 = 9;
+            size = "SMALL"; op = "7, 9";
         }
 
-        currentPrediction = size;
-        document.getElementById('wRes').innerText = size;
-        document.getElementById('wRes').className = `prediction-text text-8xl ${size === 'BIG' ? 'size-glow-big' : 'size-glow-small'}`;
-        document.getElementById('opNums').innerText = `${op1}, ${op2}`;
+        // Save to Firebase History
+        const key = localStorage.getItem('active_key');
+        const nextIssue = (BigInt(lastPeriod) + 1n).toString();
+        const historyRef = push(ref(db, `user_history/${key}`));
+        
+        await set(historyRef, {
+            period: nextIssue,
+            prediction: size,
+            time: new Date().toLocaleTimeString()
+        });
+
+        // Update UI
+        const resDisp = document.getElementById('wRes');
+        resDisp.innerText = size;
+        resDisp.className = `hacker-font text-8xl ${size === 'BIG' ? 'text-red-500 shadow-red-500' : 'text-emerald-500 shadow-emerald-500'}`;
+        document.getElementById('opNums').innerText = op;
+        
         loader.classList.add('hidden');
-    }, 1000);
+    }, 1200);
 };
 
-document.getElementById('historyToggle').onclick = () => {
-    document.getElementById('historyPanel').classList.toggle('hidden');
+// History Redirection
+document.getElementById('historyBtn').onclick = () => {
+    window.location.href = "history.html";
 };
 
 setInterval(fetchAPI, 5000);
