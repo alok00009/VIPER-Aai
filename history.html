@@ -3,94 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nobita Hack 💀 | History</title>
+    <title>Nobita History 💀</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap');
-        body { background: #05070a; color: white; font-family: sans-serif; }
+        body { background: #05070a; color: white; font-family: sans-serif; overflow-x: hidden; }
         .hacker-font { font-family: 'Orbitron', sans-serif; }
-        .card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
-        .win-glow { border-left: 4px solid #10b981; box-shadow: -10px 0 20px rgba(16, 185, 129, 0.1); }
-        .loss-glow { border-left: 4px solid #ef4444; box-shadow: -10px 0 20px rgba(239, 68, 68, 0.1); }
+        .card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; position: relative; }
+        .win-border { border-left: 4px solid #10b981; }
+        .loss-border { border-left: 4px solid #ef4444; }
+        .pending-border { border-left: 4px solid #6b7280; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body class="p-4">
 
     <div class="max-w-md mx-auto">
         <div class="flex justify-between items-center mb-8 border-b border-white/5 pb-4">
-            <h1 class="hacker-font text-xl text-yellow-400 italic">Nobita <span class="text-white">History 💀</span></h1>
-            <button onclick="window.location.href='index.html'" class="text-[9px] font-bold bg-white/5 px-4 py-2 rounded-full uppercase">Back</button>
+            <h1 class="hacker-font text-xl text-red-500 italic">Nobita <span class="text-white">Hack</span></h1>
+            <button onclick="window.location.href='index.html'" class="text-[9px] font-bold bg-white/5 px-4 py-2 rounded-full uppercase border border-white/10">Back</button>
         </div>
 
-        <div id="historyContainer" class="space-y-3">
-            <div class="text-center py-20 animate-pulse text-gray-600 text-xs uppercase tracking-widest">Scanning Records...</div>
+        <div id="historyList" class="space-y-4">
+            <div id="loadingStatus" class="text-center py-20 animate-pulse text-gray-700 text-[10px] uppercase tracking-widest font-black">
+                Syncing Neural Records...
+            </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-        import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
 
-        // Firebase Config (Same as your database.js)
-        const firebaseConfig = { /* Paste your config here */ };
+        // Same Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBeHnf50EYOl87DM-D-etB3rgqqhZlt7fw",
+            authDomain: "ghhhh-fb825.firebaseapp.com",
+            databaseURL: "https://ghhhh-fb825-default-rtdb.firebaseio.com",
+            projectId: "ghhhh-fb825",
+            storageBucket: "ghhhh-fb825.firebasestorage.app",
+            appId: "1:229182122042:web:07c4adf653f4f8c7d5ed03"
+        };
+
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-
         const userKey = localStorage.getItem('active_key');
-        const container = document.getElementById('historyContainer');
+        const listDiv = document.getElementById('historyList');
 
-        async function fetchRealResults() {
-            const res = await fetch("https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json");
-            const json = await res.json();
-            return json.data.list;
+        async function getRealResults() {
+            try {
+                const res = await fetch("https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json");
+                const data = await res.json();
+                return data.data.list;
+            } catch (e) { return []; }
         }
 
-        async function loadHistory() {
-            const realData = await fetchRealResults();
+        async function loadData() {
+            const realResults = await getRealResults();
             const historyRef = ref(db, `user_history/${userKey}`);
 
+            // Firebase Listener
             onValue(historyRef, (snapshot) => {
                 if (!snapshot.exists()) {
-                    container.innerHTML = "<p class='text-center text-gray-700 mt-10 uppercase text-[10px]'>No Hacks Found</p>";
+                    listDiv.innerHTML = "<p class='text-center py-20 text-gray-800 uppercase text-[10px] font-black'>No History Found 💀</p>";
                     return;
                 }
 
-                container.innerHTML = "";
-                const records = snapshot.val();
+                listDiv.innerHTML = ""; // Clear loader
+                const data = snapshot.val();
+                
+                // Convert object to array and reverse
+                const records = Object.keys(data).map(id => data[id]).reverse();
 
-                Object.values(records).reverse().forEach(record => {
-                    // Match with real API result
-                    const actualMatch = realData.find(d => d.issueNumber == record.period);
-                    let actualSize = "---";
-                    let status = "JK 🎲";
-                    let glowClass = "";
-                    let statusColor = "text-gray-400";
+                records.forEach(item => {
+                    const match = realResults.find(r => String(r.issueNumber) === String(item.period));
+                    
+                    let status = "PENDING 🎲";
+                    let glowClass = "pending-border";
+                    let statusColor = "text-gray-500";
+                    let realSize = "--";
 
-                    if (actualMatch) {
-                        actualSize = actualMatch.number >= 5 ? "BIG" : "SMALL";
-                        if (record.prediction === actualSize) {
+                    if (match) {
+                        realSize = parseInt(match.number) >= 5 ? "BIG" : "SMALL";
+                        if (item.prediction === realSize) {
                             status = "WIN 🐯";
-                            glowClass = "win-glow";
+                            glowClass = "win-border";
                             statusColor = "text-emerald-500";
                         } else {
                             status = "LOSS 💀";
-                            glowClass = "loss-glow";
+                            glowClass = "loss-border";
                             statusColor = "text-red-500";
                         }
                     }
 
-                    container.innerHTML += `
-                        <div class="card p-4 rounded-2xl ${glowClass} flex justify-between items-center">
-                            <div class="space-y-1">
-                                <p class="text-[8px] text-gray-500 font-bold uppercase">Period: ${record.period.toString().slice(-3)}</p>
-                                <div class="flex items-center gap-3">
-                                    <span class="text-xs font-bold text-white/40 italic">PRED: ${record.prediction}</span>
-                                    <span class="text-xs font-bold text-white italic">REAL: ${actualSize}</span>
+                    listDiv.innerHTML += `
+                        <div class="card p-5 rounded-[25px] ${glowClass} flex justify-between items-center">
+                            <div>
+                                <p class="text-[8px] text-gray-500 font-bold uppercase mb-1">Period: ${item.period.toString().slice(-3)}</p>
+                                <div class="flex gap-4">
+                                    <span class="text-[10px] font-bold text-white/50 uppercase">Pred: ${item.prediction}</span>
+                                    <span class="text-[10px] font-bold text-white uppercase">Real: ${realSize}</span>
                                 </div>
                             </div>
                             <div class="text-right">
-                                <p class="hacker-font text-[10px] ${statusColor} mb-1">${status}</p>
-                                <p class="text-[7px] text-gray-700 font-bold">${record.time}</p>
+                                <p class="hacker-font text-[10px] ${statusColor}">${status}</p>
+                                <p class="text-[7px] text-white/10 mt-1">${item.time}</p>
                             </div>
                         </div>
                     `;
@@ -98,7 +115,13 @@
             });
         }
 
-        loadHistory();
+        if(!userKey) {
+            alert("Please Login First!");
+            window.location.href = 'index.html';
+        } else {
+            loadData();
+        }
+
     </script>
 </body>
 </html>
