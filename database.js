@@ -11,27 +11,26 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+export const db = getDatabase(app);
 
-// Simple Key System
-window.checkKey = async (userKey) => {
-    // Firebase mein 'keys' folder mein key check karega
-    const snapshot = await get(ref(db, 'access_keys/' + userKey));
-    if (snapshot.exists()) {
-        localStorage.setItem('viper_auth', 'true');
-        return true;
-    }
-    return false;
-};
+// Authentication Logic
+const authBtn = document.getElementById('authBtn');
+if(authBtn) {
+    authBtn.onclick = async () => {
+        const key = document.getElementById('accessKey').value;
+        const snapshot = await get(ref(db, 'access_keys/' + key));
+        
+        if (snapshot.exists()) {
+            localStorage.setItem('active_key', key);
+            location.reload();
+        } else {
+            alert("WRONG KEY! ACCESS DENIED 💀");
+        }
+    };
+}
 
-// Check if already logged in
-if (localStorage.getItem('viper_auth') === 'true') {
+// Auto-Login Check
+if (localStorage.getItem('active_key')) {
     document.getElementById('keyOverlay').classList.add('hidden');
     document.getElementById('mainApp').classList.remove('hidden');
 }
-
-document.getElementById('authBtn').onclick = async () => {
-    const key = document.getElementById('accessKey').value;
-    const ok = await window.checkKey(key);
-    if (ok) location.reload(); else alert("Invalid Key!");
-};
