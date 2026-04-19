@@ -6,122 +6,91 @@
     <title>Nobita History 💀</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap');
-        body { background: #05070a; color: white; font-family: sans-serif; overflow-x: hidden; }
-        .hacker-font { font-family: 'Orbitron', sans-serif; }
-        .card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; position: relative; }
-        .win-border { border-left: 4px solid #10b981; }
-        .loss-border { border-left: 4px solid #ef4444; }
-        .pending-border { border-left: 4px solid #6b7280; }
-        .hidden { display: none !important; }
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&display=swap');
+        
+        body { background-color: #0d1117; color: white; font-family: sans-serif; overflow-x: hidden; }
+        .sync-glow { font-family: 'Syncopate', sans-serif; font-weight: 700; color: #ff3c73; text-shadow: 0 0 15px #ff3c73; }
+        .dashboard-shell { background-color: rgba(22, 27, 34, 0.95); border-radius: 40px; border: 1px solid #30363d; }
+        
+        /* History Items Styling */
+        .history-item { background: #161b22; border-radius: 20px; border: 1px solid #30363d; margin-bottom: 20px; transition: 0.3s; }
+        .history-item:hover { border-color: #10b981; }
+        .win-gradient { background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), transparent); border-left: 4px solid #10b981; }
+        .retry-gradient { background: linear-gradient(135deg, rgba(139, 148, 158, 0.1), transparent); border-left: 4px solid #8b949e; }
     </style>
 </head>
-<body class="p-4">
+<body oncontextmenu="return false">
 
-    <div class="max-w-md mx-auto">
-        <div class="flex justify-between items-center mb-8 border-b border-white/5 pb-4">
-            <h1 class="hacker-font text-xl text-red-500 italic">Nobita <span class="text-white">Hack</span></h1>
-            <button onclick="window.location.href='index.html'" class="text-[9px] font-bold bg-white/5 px-4 py-2 rounded-full uppercase border border-white/10">Back</button>
-        </div>
-
-        <div id="historyList" class="space-y-4">
-            <div id="loadingStatus" class="text-center py-20 animate-pulse text-gray-700 text-[10px] uppercase tracking-widest font-black">
-                Syncing Neural Records...
-            </div>
+<div class="min-h-screen p-4 pt-10 pb-20">
+    
+    <div class="dashboard-shell p-10 max-w-sm mx-auto shadow-2xl relative mb-10">
+        <a href="index.html" class="absolute top-5 right-5 text-gray-500 p-2">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        </a>
+        <div class="mb-10 text-center">
+            <h1 class="sync-glow text-3xl mb-1">NOBITA HACK 💀</h1>
+            <p class="text-[#fffb13] text-xs uppercase tracking-widest">History records link neural secure cloud</p>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+    <div id="historyList" class="space-y-5 max-w-sm mx-auto">
+        <div class="text-center text-gray-700 mt-20 p-10 uppercase tracking-widest text-[10px]">Cloud history storage linking...</div>
+    </div>
 
-        // Same Firebase Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyBeHnf50EYOl87DM-D-etB3rgqqhZlt7fw",
-            authDomain: "ghhhh-fb825.firebaseapp.com",
-            databaseURL: "https://ghhhh-fb825-default-rtdb.firebaseio.com",
-            projectId: "ghhhh-fb825",
-            storageBucket: "ghhhh-fb825.firebasestorage.app",
-            appId: "1:229182122042:web:07c4adf653f4f8c7d5ed03"
-        };
+</div>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const userKey = localStorage.getItem('active_key');
-        const listDiv = document.getElementById('historyList');
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
 
-        async function getRealResults() {
-            try {
-                const res = await fetch("https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json");
-                const data = await res.json();
-                return data.data.list;
-            } catch (e) { return []; }
+    // Use same Firebase Config as database.js
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const container = document.getElementById('historyList');
+
+    async function loadHistory() {
+        container.innerHTML = '<div class="text-center text-gray-700 mt-20 animate-pulse text-[10px] uppercase tracking-widest">Syncing History neural verified link</div>';
+        
+        // Link to cloud verified history folder in your database
+        const snapshot = await get(ref(db, 'viper_history'));
+        
+        if (!snapshot.exists()) {
+            container.innerHTML = '<div class="text-center text-gray-700 mt-20">No Cloud history verified on secure link V15</div>';
+            return;
         }
 
-        async function loadData() {
-            const realResults = await getRealResults();
-            const historyRef = ref(db, `user_history/${userKey}`);
-
-            // Firebase Listener
-            onValue(historyRef, (snapshot) => {
-                if (!snapshot.exists()) {
-                    listDiv.innerHTML = "<p class='text-center py-20 text-gray-800 uppercase text-[10px] font-black'>No History Found 💀</p>";
-                    return;
-                }
-
-                listDiv.innerHTML = ""; // Clear loader
-                const data = snapshot.val();
-                
-                // Convert object to array and reverse
-                const records = Object.keys(data).map(id => data[id]).reverse();
-
-                records.forEach(item => {
-                    const match = realResults.find(r => String(r.issueNumber) === String(item.period));
-                    
-                    let status = "PENDING 🎲";
-                    let glowClass = "pending-border";
-                    let statusColor = "text-gray-500";
-                    let realSize = "--";
-
-                    if (match) {
-                        realSize = parseInt(match.number) >= 5 ? "BIG" : "SMALL";
-                        if (item.prediction === realSize) {
-                            status = "WIN 🐯";
-                            glowClass = "win-border";
-                            statusColor = "text-emerald-500";
-                        } else {
-                            status = "LOSS 💀";
-                            glowClass = "loss-border";
-                            statusColor = "text-red-500";
-                        }
-                    }
-
-                    listDiv.innerHTML += `
-                        <div class="card p-5 rounded-[25px] ${glowClass} flex justify-between items-center">
-                            <div>
-                                <p class="text-[8px] text-gray-500 font-bold uppercase mb-1">Period: ${item.period.toString().slice(-3)}</p>
-                                <div class="flex gap-4">
-                                    <span class="text-[10px] font-bold text-white/50 uppercase">Pred: ${item.prediction}</span>
-                                    <span class="text-[10px] font-bold text-white uppercase">Real: ${realSize}</span>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="hacker-font text-[10px] ${statusColor}">${status}</p>
-                                <p class="text-[7px] text-white/10 mt-1">${item.time}</p>
+        container.innerHTML = "";
+        const data = snapshot.val();
+        
+        // Loop through each history record and apply VIP Tiger styling from image
+        Object.keys(data).forEach(period => {
+            let record = data[period];
+            
+            let html = `
+                <div class="history-item p-6 ${record.status.includes('WIN') ? 'win-gradient' : 'retry-gradient'}">
+                    <div class="flex justify-between items-center">
+                        <div class="space-y-1">
+                            <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">PRD: ${period.toString().slice(-3)}</p>
+                            <div class="flex gap-4 items-center">
+                                <span class="hacker-font text-xs text-white/50 uppercase italic font-bold">PRED: ${record.pred}</span>
+                                <span class="hacker-font text-xl text-white font-black">${record.num}</span>
                             </div>
                         </div>
-                    `;
-                });
-            });
-        }
+                        <div class="text-right">
+                            <p class="hacker-font text-xs ${record.status.includes('WIN') ? 'text-green-500' : 'text-gray-500'} italic mb-1">${record.status}</p>
+                            <p class="text-[8px] text-gray-700 font-bold">${record.time || 'Neural Verified'}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.innerHTML += html;
+        });
+    }
 
-        if(!userKey) {
-            alert("Please Login First!");
-            window.location.href = 'index.html';
-        } else {
-            loadData();
-        }
+    loadHistory();
+    document.addEventListener('contextmenu', e => e.preventDefault());
+</script>
 
-    </script>
 </body>
 </html>
