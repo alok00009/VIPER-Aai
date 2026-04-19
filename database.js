@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-import { getDatabase, ref, get, set, push, onValue } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBeHnf50EYOl87DM-D-etB3rgqqhZlt7fw",
@@ -13,24 +13,21 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const db = getDatabase(app);
 
-// Authentication Logic
 const authBtn = document.getElementById('authBtn');
 if(authBtn) {
     authBtn.onclick = async () => {
         const key = document.getElementById('accessKey').value.trim();
-        if(!key) return alert("Enter Key!");
-        
+        if(!key) return alert("Key enter kar!");
         const snapshot = await get(ref(db, 'access_keys/' + key));
         if (snapshot.exists()) {
             localStorage.setItem('active_key', key);
             location.reload();
         } else {
-            alert("WRONG KEY 💀");
+            alert("ACCESS DENIED: KEY WRONG 💀");
         }
     };
 }
 
-// Session Management
 if (localStorage.getItem('active_key')) {
     document.getElementById('keyOverlay').classList.add('hidden');
     document.getElementById('mainApp').classList.remove('hidden');
