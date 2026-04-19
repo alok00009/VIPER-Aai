@@ -3,158 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIPER AI | SECURE ENGINE</title>
+    <title>UDAY VIP | V15 FINAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@400;900&display=swap');
-        body { background: #020617; color: white; font-family: 'Inter', sans-serif; user-select: none; }
-        .premium-card { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.1); border-radius: 32px; }
-        .hacker-title { font-family: 'Syncopate', sans-serif; letter-spacing: 2px; }
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Orbitron:wght@900&display=swap');
+        :root { --main-green: #10b981; --main-red: #ff3c73; --bg-dark: #0a0c14; }
+        body { background: var(--bg-dark); color: white; font-family: sans-serif; }
+        .shell { background: rgba(18, 21, 30, 0.98); border-radius: 40px; border: 1px solid rgba(255,255,255,0.05); }
+        .glow-title { font-family: 'Syncopate', sans-serif; text-shadow: 0 0 15px var(--main-red); color: var(--main-red); }
+        .prediction-text { font-family: 'Orbitron', sans-serif; font-weight: 900; }
+        .size-glow-big { text-shadow: 0 0 25px var(--main-red); color: var(--main-red); }
+        .size-glow-small { text-shadow: 0 0 25px var(--main-green); color: var(--main-green); }
         .hidden { display: none !important; }
-        .lock-overlay { position: absolute; inset: 0; background: rgba(2, 6, 23, 0.98); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 32px; }
-        .action-btn { background: linear-gradient(135deg, #00f2ff, #0066ff); transition: 0.4s; }
-        .input-style { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); text-align: center; outline: none; }
-        .neon-cyan { text-shadow: 0 0 15px #00f2ff; color: #00f2ff; }
-        .neon-red { text-shadow: 0 0 15px #ff0055; color: #ff0055; }
+        .history-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; }
     </style>
 </head>
-<body oncontextmenu="return false">
+<body class="min-h-screen flex flex-col items-center p-4">
 
-<script>
-    // --- DOMAIN LOCK ACTIVATE ---
-    // Yahan maine papu2.netlify.app set kar diya hai
-    const authD = "papu2.netlify.app"; 
-    if (window.location.hostname !== authD && window.location.hostname !== "localhost") {
-        document.body.innerHTML = "<div style='height:100vh; display:flex; align-items:center; justify-content:center; bg:black; color:red; font-weight:bold; text-align:center;'><div><h1>UNAUTHORIZED DOMAIN DETECTED</h1><p>This tool is locked to papu2.netlify.app</p></div></div>";
-        throw new Error("Domain Lock Active");
-    }
-</script>
-
-<div id="authSection" class="min-h-screen flex items-center justify-center p-6">
-    <div class="premium-card p-10 w-full max-w-md text-center shadow-2xl">
-        <h1 class="hacker-title text-xl font-bold mb-8">VIPER <span class="text-cyan-400">AI</span></h1>
-        <div class="flex bg-black/40 p-1 rounded-2xl mb-8">
-            <button onclick="switchTab('login')" id="lTab" class="flex-1 py-3 rounded-xl font-bold text-xs text-cyan-400 bg-white/5">LOGIN</button>
-            <button onclick="switchTab('reg')" id="rTab" class="flex-1 py-3 rounded-xl font-bold text-xs text-gray-500">SIGNUP</button>
-        </div>
-        <div class="space-y-4">
-            <input type="email" id="email" placeholder="Email" class="input-style w-full p-4 rounded-2xl">
-            <input type="password" id="pass" placeholder="Password" class="input-style w-full p-4 rounded-2xl">
-            <button id="btnSubmit" class="action-btn w-full py-4 rounded-2xl font-black uppercase tracking-widest active:scale-95">Access Engine</button>
-        </div>
-        <p id="statusMsg" class="text-[10px] mt-6 font-bold uppercase tracking-widest text-cyan-500"></p>
+    <div id="keyOverlay" class="fixed inset-0 bg-black z-[100] flex flex-col items-center justify-center p-6">
+        <h1 class="glow-title text-2xl mb-8 uppercase">Device Authorization</h1>
+        <input type="text" id="accessKey" placeholder="ENTER ACCESS KEY" class="w-full max-w-xs bg-gray-900 border border-red-500/30 p-4 rounded-xl text-center outline-none mb-4">
+        <button id="authBtn" class="bg-red-600 px-10 py-3 rounded-xl font-bold uppercase tracking-widest active:scale-95">Verify</button>
     </div>
-</div>
 
-<div id="dashboardPage" class="hidden container mx-auto p-6 max-w-lg min-h-screen relative">
-    <div class="premium-card p-8 text-center relative min-h-[550px] shadow-2xl">
-        <div id="adminLock" class="lock-overlay hidden">
-            <div class="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p class="text-cyan-400 font-bold uppercase tracking-widest text-xs">Waiting for Admin Signal...</p>
-        </div>
-        <nav class="flex justify-between items-center mb-10 border-b border-white/5 pb-4">
-            <span id="expiryInfo" class="text-[9px] font-bold text-emerald-400 uppercase">Status: Verifying...</span>
-            <button onclick="logout()" class="text-[9px] font-bold opacity-40 hover:opacity-100 uppercase">Logout</button>
-        </nav>
-        <input type="number" id="pastNo" placeholder="LAST NO." class="input-style w-full p-6 rounded-3xl text-5xl font-black mb-10 text-white hacker-title">
-        <div class="py-12 border-y border-white/5 my-6 bg-black/20 rounded-[40px] relative">
-            <div id="wRes" class="text-7xl font-black hacker-title tracking-tighter transition-all duration-500">---</div>
-            <div class="flex justify-center gap-4 mt-10">
-                <div id="n1" class="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center font-black text-xl text-yellow-500 border border-white/10 shadow-inner">-</div>
-                <div id="n2" class="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center font-black text-xl text-yellow-400 border border-white/10 shadow-inner">-</div>
-                <div id="n3" class="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center font-black text-xl text-yellow-300 border border-white/10 shadow-inner">-</div>
+    <div id="mainApp" class="hidden shell p-8 w-full max-w-sm text-center relative mt-4">
+        <h1 class="glow-title text-3xl font-black mb-1 italic">UDAY VIP</h1>
+        <p class="text-[#fffb13] text-[9px] uppercase tracking-[0.3em] mb-10 italic">Strict Logic V15</p>
+
+        <div class="bg-black/40 rounded-[40px] py-12 border border-white/5 mb-6 relative">
+            <div id="aiLoader" class="hidden absolute inset-0 bg-black/90 flex flex-col items-center justify-center rounded-[40px] z-20">
+                <div class="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            
+            <p id="nextPeriod" class="text-[10px] text-gray-400 font-bold uppercase mb-2">Next: Loading...</p>
+            <div id="wRes" class="prediction-text text-8xl">---</div>
+            
+            <div class="mt-8 px-6">
+                <div class="border border-dashed border-yellow-500/30 py-4 rounded-xl">
+                    <p class="text-[9px] text-gray-400 uppercase mb-1">Opposite Nums</p>
+                    <div id="opNums" class="text-yellow-400 font-black text-xl">-</div>
+                </div>
             </div>
         </div>
-        <button onclick="originalPredict()" class="action-btn w-full py-6 rounded-[28px] font-black text-lg uppercase tracking-wider shadow-lg active:scale-95">Get Prediction</button>
+
+        <button id="btnPredict" class="w-full bg-emerald-600 py-6 rounded-3xl font-black text-[10px] uppercase tracking-[0.4em] mb-4 active:scale-95">Link AI Prediction</button>
+        
+        <button id="historyToggle" class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-4">View History</button>
+        <div id="historyPanel" class="hidden history-card p-4 text-[10px] max-h-40 overflow-y-auto">
+            <table class="w-full text-center">
+                <thead>
+                    <tr class="text-gray-500 border-b border-white/5">
+                        <th class="pb-2">PRD</th>
+                        <th class="pb-2">PRED</th>
+                        <th class="pb-2">NUM</th>
+                        <th class="pb-2">STATUS</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody">
+                    </tbody>
+            </table>
+        </div>
     </div>
-</div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-    import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyD6f_ghtCQP2q41QXGkld1l8KhX6z7mYgU",
-        authDomain: "fuck-u-1fd9c.firebaseapp.com",
-        databaseURL: "https://fuck-u-1fd9c-default-rtdb.firebaseio.com",
-        projectId: "fuck-u-1fd9c",
-        storageBucket: "fuck-u-1fd9c.firebasestorage.app",
-        appId: "1:418045703508:web:736581cc3132dab22fc4c1"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
-
-    const masterUID = "DM4f7VClDtRnYjiFDX2lCF5XBRB3";
-    let tab = 'login';
-    const msg = document.getElementById('statusMsg');
-
-    window.switchTab = (t) => {
-        tab = t;
-        document.getElementById('lTab').className = t === 'login' ? 'flex-1 py-3 rounded-xl font-bold text-xs text-cyan-400 bg-white/5' : 'flex-1 py-3 rounded-xl font-bold text-xs text-gray-500';
-        document.getElementById('rTab').className = t === 'reg' ? 'flex-1 py-3 rounded-xl font-bold text-xs text-emerald-400 bg-white/5' : 'flex-1 py-3 rounded-xl font-bold text-xs text-gray-500';
-    };
-
-    document.getElementById('btnSubmit').addEventListener('click', async () => {
-        const e = document.getElementById('email').value, p = document.getElementById('pass').value;
-        if(!e || !p) return;
-        msg.innerText = "Syncing...";
-        try {
-            if(tab === 'reg') {
-                const cred = await createUserWithEmailAndPassword(auth, e, p);
-                await set(ref(db, 'users/' + cred.user.uid), { email: e, access: 'pending', expiry: 0 });
-                msg.innerText = "Request Sent!";
-                setTimeout(() => signOut(auth), 2000);
-            } else {
-                await signInWithEmailAndPassword(auth, e, p);
-            }
-        } catch (err) { msg.innerText = "Error: " + err.message; }
-    });
-
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            const snap = await get(ref(db, 'users/' + user.uid));
-            const data = snap.val();
-            if (user.uid === masterUID || (data && data.access === true)) {
-                document.getElementById('authSection').classList.add('hidden');
-                document.getElementById('dashboardPage').classList.remove('hidden');
-                onValue(ref(db, 'admin_controls/prediction_status'), (s) => {
-                    document.getElementById('adminLock').classList.toggle('hidden', s.val() === 'start');
-                });
-            } else {
-                msg.innerText = "Pending Approval...";
-                signOut(auth);
-            }
-        } else {
-            document.getElementById('authSection').classList.remove('hidden');
-            document.getElementById('dashboardPage').classList.add('hidden');
-        }
-    });
-
-    window.logout = () => signOut(auth);
-
-    window.originalPredict = () => {
-        const _v = document.getElementById('pastNo').value;
-        if(!_v) return;
-        const _r = document.getElementById('wRes');
-        _r.innerText = "...";
-        setTimeout(() => {
-            const _n = parseInt(_v);
-            const _logic = (_n + 7) % 10; 
-            const _sz = _logic >= 5 ? "BIG" : "SMALL";
-            _r.innerText = _sz;
-            _r.className = _sz === "BIG" ? "text-7xl font-black hacker-title neon-red" : "text-7xl font-black hacker-title neon-cyan";
-            document.getElementById('n1').innerText = (_n + 2) % 10;
-            document.getElementById('n2').innerText = (_n + 5) % 10;
-            document.getElementById('n3').innerText = (_n + 8) % 10;
-        }, 500);
-    };
-
-    // Right click & F12 lock
-    document.addEventListener('contextmenu', e => e.preventDefault());
-    document.onkeydown = e => { if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73)) return false; };
-</script>
+    <script type="module" src="database.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
